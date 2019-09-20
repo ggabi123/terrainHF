@@ -18,7 +18,7 @@ public class Main {
         System.out.println("2nd step");
 
         int waterDepth = -1;
-
+        int[][] newArray = new int[4][4];
 
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - 1; j++) {
@@ -27,8 +27,9 @@ public class Main {
                 int nextJ = array[i][j + 1];
 
 
-                while (Math.abs(waterDepth) < nextJ && (nextJ == nextI)) {
+                if (Math.abs(waterDepth) < nextJ && (nextJ == nextI)) {
                     waterDepth--;
+                    newArray[i][j] = waterDepth;
                 }
 
             }
@@ -37,7 +38,12 @@ public class Main {
 
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
-                System.out.print(array[i][j] + " ");
+                if(newArray[i][j] != array[i][j]){
+                    System.out.print(newArray[i][j] + " ");
+                }else {
+                    System.out.print(array[i][j] + " ");
+
+                }
             }
             System.out.println();
         }
