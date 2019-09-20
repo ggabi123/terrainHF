@@ -4,12 +4,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int[][] array = new int[][]{{-3, -3, -3, 4}, {-3, -3, 4, 4}, {-3, 3, 3, 3}, {-2, -1, 2, 3}};
+        int[][] array = new int[][]{{-3, -3, -3, 4, 10}, {-3, -3, 4, 4, 10}, {-3, 3, 3, 3, 10}, {-2, -2, 2, 3, 10}, {10, 10, 10, 10}};
 
 
         System.out.println("1st step");
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 System.out.print(array[i][j] + " ");
             }
             System.out.println();
@@ -21,14 +21,31 @@ public class Main {
         //((waterDepth != array[i][j + 1] || waterDepth != array[i + 1][j]) && (i != j) && (array[i][j + 1] > Math.abs(min) || array[i + 1][j] > Math.abs(min)))
 
         int waterDepth = -3;
-        int min = 1;
+        int min = -2;
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
 
 
-                if ((array[i][j + 1] == Math.abs(min) && array[i + 1][j] == Math.abs(min)) && i != j) {
-                    if (Math.abs(waterDepth) < Math.abs(array[i][j + 1]) && array[i][j + 1] == array[i + 1][j]) {
+                if ((Math.abs(array[i][j + 1]) == Math.abs(min) || Math.abs(array[i + 1][j]) == Math.abs(min)) && i != j) {
+
+                    if(array[i][j + 1] > 0){
+                        array[i][j + 1] *= (-1);
+                    }else if(array[i + 1][j] > 0){
+                        array[i + 1][j] *= (-1);
+                    } else if (array[i][j + 1] < Math.abs(waterDepth)) {
+                        if (array[i][j + 1] > 0) {
+                            array[i][j + 1] *= (-1);
+                        } else {
+                            array[i][j + 1]--;
+                        }
+                    } else if (array[i + 1][j] < Math.abs(waterDepth)) {
+                        if (array[i + 1][j] > 0) {
+                            array[i + 1][j] *= (-1);
+                        } else {
+                            array[i + 1][j]--;
+                        }
+                    } else if (Math.abs(waterDepth) < Math.abs(array[i][j + 1]) && array[i][j + 1] == array[i + 1][j]) {
                         waterDepth--;
                         array[i][j] = waterDepth;
 
@@ -85,8 +102,8 @@ public class Main {
             }
         }
 
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 System.out.print(array[i][j] + " ");
             }
             System.out.println();
