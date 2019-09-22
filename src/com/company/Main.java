@@ -4,32 +4,18 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int[][] array = new int[][]{{1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
+        int[][] array = {{-1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
 
-
-        System.out.println("1st step");
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(array[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("2nd step");
-
-
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                System.out.print(array[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-
+        printTerrain(array);
+        System.out.println("2nd");
+        //printTerrain(array);
     }
 
-    public static int[][] changeTerrain(int[][] terrain, int[] coordinates) {
-        int waterDepth = 0;
+    public static int[][] changeTerrain(int[][] terrain) {
+
+        int[] coordinates = findMinAndWaterDepthWithCoordinates(terrain);
+
+
         for (int i = 0; i < terrain.length; i++) {
             for (int j = 0; j < terrain.length; j++) {
                 if ((i <= coordinates[1] && j <= coordinates[2]) && (terrain[i][j] <= coordinates[0]) || terrain[i][j] < 0) {
@@ -59,24 +45,24 @@ public class Main {
                             terrain[i][j] *= (-1);
                         } else if (Math.abs(terrain[i][j]) < coordinates[0] && terrain[i][j] < 0) {
                             terrain[i][j]--;
-                        } else if (terrain[i][j] == Math.abs(coordinates[0]) && terrain[i][j] > 0 && Math.abs(waterDepth) >= terrain[i][j]) {
+                        } else if (terrain[i][j] == Math.abs(coordinates[0]) && terrain[i][j] > 0 && Math.abs(coordinates[3]) >= terrain[i][j]) {
                             terrain[i][j] *= (-1);
                         }
                     } else if ((i < terrain.length - 1 && j < terrain.length - 1) || (i == terrain.length - 1 && j == terrain.length - 1)) {
 
 
-                        if (Math.abs(coordinates[0]) > Math.abs(waterDepth) && coordinates[0] < 0) {
+                        if (Math.abs(coordinates[0]) > Math.abs(coordinates[3]) && coordinates[0] < 0) {
                             terrain[i][j]--;
 
-                        } else if (waterDepth != terrain[i][j] && coordinates[0] > 0 && terrain[i][j] > 0 && Math.abs(waterDepth) >= coordinates[0]) {
+                        } else if (coordinates[3] != terrain[i][j] && coordinates[0] > 0 && terrain[i][j] > 0 && Math.abs(coordinates[3]) >= coordinates[0]) {
                             terrain[i][j] *= (-1);
 
-                        } else if (waterDepth == terrain[i][j] && coordinates[0] > Math.abs(terrain[i][j])) {
+                        } else if (coordinates[3] == terrain[i][j] && coordinates[0] > Math.abs(terrain[i][j])) {
                             terrain[i][j]--;
-                        } else if (Math.abs(coordinates[0]) < Math.abs(waterDepth) && terrain[i][j] != waterDepth) {
+                        } else if (Math.abs(coordinates[0]) < Math.abs(coordinates[3]) && terrain[i][j] != coordinates[3]) {
                             if (coordinates[0] > 0 && Math.abs(terrain[i][j]) < Math.abs(coordinates[0])) {
                                 terrain[i][j] *= (-1);
-                            } else if (coordinates[0] < terrain[i][j] && waterDepth < terrain[i][j]) {
+                            } else if (coordinates[0] < terrain[i][j] && coordinates[3] < terrain[i][j]) {
                                 terrain[i][j]--;
                             }
                         }
@@ -92,18 +78,22 @@ public class Main {
                 }
             }
         }
+        int[][] newTerrain = terrain;
 
-
-        return terrain;
+        return newTerrain;
     }
 
 
-    public static int[] findMinWithCoordinates(int[][] array) {
-        int[] minAndCoordinates = new int[3];
+    public static int[] findMinAndWaterDepthWithCoordinates(int[][] array) {
+        int[] minAndCoordinates = new int[4];
         int min = Integer.MAX_VALUE;
+
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] < min) {
+                if (array[i][j] < 0 && Math.abs(array[i][j]) < min) {
+                    minAndCoordinates[3] = array[i][j];
+                } else if (array[i][j] < min && array[i][j] > 0) {
+                    min = array[i][j];
                     minAndCoordinates[0] = array[i][j];
                     minAndCoordinates[1] = i;
                     minAndCoordinates[2] = j;
@@ -112,6 +102,18 @@ public class Main {
         }
         return minAndCoordinates;
     }
+
+    public static void printTerrain(int[][] array) {
+
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                System.out.print(array[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+
 }
 
 
