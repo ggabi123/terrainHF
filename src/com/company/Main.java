@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int[][] array = {{-1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
+        int[][] array = {{1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
 
         printTerrain(array);
         System.out.println("2nd");
@@ -98,6 +98,7 @@ public class Main {
                     minAndCoordinates[1] = i;
                     minAndCoordinates[2] = j;
                 }
+                // ha nincs benn negatív szám, akkor min * (-1)
             }
         }
         return minAndCoordinates;
