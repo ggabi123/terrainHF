@@ -13,7 +13,7 @@ public class Main {
     }
 
 
-    public static void updateTerrain(int[][] testArray){
+    public static void updateTerrain(int[][] testArray) {
         int[] minValueAndCoordinates = returnMinAndCoordinates(testArray);
         int min = minValueAndCoordinates[0];
         int i = minValueAndCoordinates[1];
@@ -24,7 +24,7 @@ public class Main {
 
         if (min == Math.abs(waterDepth) && min > 0) {
             testArray[i][j] = inverseAddition(testArray[i][j]);
-        }else {
+        } else {
 
 
             if (j < testArray.length - 1) {
