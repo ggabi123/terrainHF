@@ -4,11 +4,125 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int[][] array = {{1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
+        int[][] array = {{-2, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
+
+        int min = 1;
+
+
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (i < 0 && i < array.length - 1 && j < 0 && j < array.length - 1) {
+                    int waterDepth = waterDepthTracker(array[i][j]);
+                    array[i][j] = waterDepth;
+                    int smallestNeighbor = 0;
+                    int right = array[i][j + 1];
+                    int left = array[i][j - 1];
+                    int top = array[i + 1][j];
+                    int bottom = array[i - 1][j];
+
+
+                    if(array[i][j + 1] <= smallestNeighbor){
+                        if (array[i][j + 1] == Math.abs(waterDepth) && array[i][j + 1] > 0) {
+                            array[i][j + 1] = inverseAddition(array[i][j + 1]);
+                        }else if(Math.abs(array[i][j]) < array[i][j +1]){
+                            array[i][j] = decreaseNumber(array[i][j]);
+                        }else if(Math.abs(array[i][j]) > array[i][j + 1] && array[i][j + 1] > 0){
+                            array[i][j + 1] = inverseAddition(array[i][j + 1]);
+                        }else if(Math.abs(array[i][j]) > array[i][j + 1] && array[i][j + 1] < 0){
+                            array[i][j + 1] = decreaseNumber(array[i][j + 1]);
+                        }
+                    }
+
+
+
+
+                    if (array[i][j - 1] == Math.abs(waterDepth) && array[i][j - 1] > 0) {
+                        array[i][j - 1] = inverseAddition(array[i][j - 1]);
+                    }else if(Math.abs(array[i][j]) < array[i][j - 1]){
+                        array[i][j] = decreaseNumber(array[i][j]);
+                    }else if(Math.abs(array[i][j]) > array[i][j - 1] && array[i][j - 1] > 0){
+                        array[i][j - 1] = inverseAddition(array[i][j - 1]);
+                    }else if(Math.abs(array[i][j]) > array[i][j - 1] && array[i][j - 1] < 0){
+                        array[i][j - 1] = decreaseNumber(array[i][j - 1]);
+                    }
+
+
+
+                    if (array[i - 1][j] == Math.abs(waterDepth) && array[i - 1][j] > 0) {
+                        array[i - 1][j] = inverseAddition(array[i - 1][j]);
+                    } else if(Math.abs(array[i][j]) < array[i - 1][j]){
+                        array[i][j] = decreaseNumber(array[i][j]);
+                    }else if(Math.abs(array[i][j]) > array[i - 1][j] && array[i - 1][j] > 0){
+                        array[i - 1][j] = inverseAddition(array[i - 1][j]);
+                    }else if(Math.abs(array[i][j]) > array[i - 1][j] && array[i - 1][j] < 0){
+                        array[i - 1][j] = decreaseNumber(array[i - 1][j]);
+                    }
+
+
+                    if (array[i + 1][j] == Math.abs(waterDepth) && array[i + 1][j] > 0) {
+                        array[i + 1][j] = inverseAddition(array[i + 1][j]);
+                    } else if(Math.abs(array[i][j]) < array[i + 1][j]){
+                        array[i][j] = decreaseNumber(array[i][j]);
+                    }else if(Math.abs(array[i][j]) > array[i + 1][j] && array[i + 1][j] > 0){
+                        array[i + 1][j] = inverseAddition(array[i + 1][j]);
+                    }else if(Math.abs(array[i][j]) > array[i + 1][j] && array[i + 1][j] < 0){
+                        array[i + 1][j] = decreaseNumber(array[i + 1][j]);
+                    }
+
+
+                }
+
+
+            }
+        }
 
         printTerrain(array);
-        System.out.println("2nd");
-        //printTerrain(array);
+
+
+    }
+
+    public static int findSmallestNeighbor(int ...numbers) {
+        int smallestNeighbor = numbers[0];
+        for (int i = 0; i < numbers.length; i++) {
+            if(numbers[i] < smallestNeighbor){
+                smallestNeighbor = numbers[i];
+            }
+        }
+        return smallestNeighbor;
+    }
+
+    public static int inverseAddition(int number) {
+        if (number > 0) {
+            return number * (-1);
+        } else {
+            return number;
+        }
+    }
+
+    public static int decreaseNumber(int number) {
+        if (number < 0) {
+            number--;
+        }
+        return number;
+    }
+
+
+    public static int findMin(int[][] array) {
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] < min) {
+                    min = array[i][j];
+                }
+            }
+        }
+        return min;
+    }
+
+
+    public static int waterDepthTracker(int min) {
+        int waterDepth = Math.abs(min) * (-1);
+        return waterDepth;
     }
 
     public static int[][] changeTerrain(int[][] terrain) {
@@ -87,18 +201,21 @@ public class Main {
     public static int[] findMinAndWaterDepthWithCoordinates(int[][] array) {
         int[] minAndCoordinates = new int[4];
         int min = Integer.MAX_VALUE;
-
+        boolean flag = true;
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] < 0 && Math.abs(array[i][j]) < min) {
-                    minAndCoordinates[3] = array[i][j];
-                } else if (array[i][j] < min && array[i][j] > 0) {
+                if (array[i][j] < min && array[i][j] > 0) {
                     min = array[i][j];
                     minAndCoordinates[0] = array[i][j];
                     minAndCoordinates[1] = i;
                     minAndCoordinates[2] = j;
                 }
-                // ha nincs benn negatív szám, akkor min * (-1)
+                if (array[i][j] < 0 && Math.abs(array[i][j]) < min) {
+                    minAndCoordinates[3] = array[i][j];
+                } else if (array[i][j] > 0 && array[i][j] == min && flag == true) {
+                    minAndCoordinates[3] = array[i][j] * (-1);
+                    flag = false;
+                }
             }
         }
         return minAndCoordinates;
