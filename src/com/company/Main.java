@@ -4,160 +4,126 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int[][] testArray = {{1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
-
-
-        int waterDepth = -1;
-        int[] minValueAndCoordinates = returnMinAndCoordinates(testArray);
-        int min = minValueAndCoordinates[0];
-        int i = minValueAndCoordinates[1];
-        int j = minValueAndCoordinates[2];
-        int right = 10;
-        int left = 10;
-        int top = 10;
-        int bottom = 10;
-
-
-        if (min == Math.abs(waterDepth) && min > 0) {
-            testArray[i][j] = inverseAddition(testArray[i][j]);
-        } else if (j > 0) {
-            if (i > 0) {
-                if (i < testArray.length - 1) {
-                    right = testArray[i][j + 1];
-                } else {
-                    top = testArray[i - 1][j];
-                }
-            } else {
-                bottom = testArray[i + 1][j];
-            }
-
-
-        } else if (i > 0) {
-            if (j > 0) {
-                if (i < testArray.length - 1) {
-                    right = testArray[i][j + 1];
-                } else {
-                    top = testArray[i - 1][j];
-                }
-            } else {
-                left = testArray[i][j - 1];
-            }
-
-        } else if (j < testArray.length - 1) {
-            if (i < testArray.length - 1) {
-                if (i > 0) {
-                    left = testArray[i][j - 1];
-                } else {
-                    top = testArray[i - 1][j];
-                }
-            } else {
-                bottom = testArray[i + 1][j];
-            }
-
-        } else if (i < testArray.length - 1) {
-            if (j < testArray.length - 1) {
-                if (j > 0) {
-                    right = testArray[i][j + 1];
-                } else {
-                    left = testArray[i][j - 1];
-                }
-            } else {
-                bottom = testArray[i + 1][j];
-
-            }
-        }
-
-
-        int smallestNeighbor = findSmallestNeighbor(right, left, top, bottom);
-
-
-        if (testArray[i][j + 1] <= smallestNeighbor) {
-            if (testArray[i][j + 1] == Math.abs(waterDepth) && testArray[i][j + 1] > 0) {
-                testArray[i][j + 1] = inverseAddition(testArray[i][j + 1]);
-            } else if (Math.abs(testArray[i][j]) < testArray[i][j + 1]) {
-                testArray[i][j] = decreaseNumber(testArray[i][j]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i][j + 1] && testArray[i][j + 1] > 0) {
-                testArray[i][j + 1] = inverseAddition(testArray[i][j + 1]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i][j + 1] && testArray[i][j + 1] < 0) {
-                testArray[i][j + 1] = decreaseNumber(testArray[i][j + 1]);
-            }
-        }
-
-
-        if (testArray[i][j - 1] <= smallestNeighbor) {
-            if (testArray[i][j - 1] == Math.abs(waterDepth) && testArray[i][j - 1] > 0) {
-                testArray[i][j - 1] = inverseAddition(testArray[i][j - 1]);
-            } else if (Math.abs(testArray[i][j]) < testArray[i][j - 1]) {
-                testArray[i][j] = decreaseNumber(testArray[i][j]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i][j - 1] && testArray[i][j - 1] > 0) {
-                testArray[i][j - 1] = inverseAddition(testArray[i][j - 1]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i][j - 1] && testArray[i][j - 1] < 0) {
-                testArray[i][j - 1] = decreaseNumber(testArray[i][j - 1]);
-            }
-        }
-
-
-        if (testArray[i - 1][j] <= smallestNeighbor) {
-            if (testArray[i - 1][j] == Math.abs(waterDepth) && testArray[i - 1][j] > 0) {
-                testArray[i - 1][j] = inverseAddition(testArray[i - 1][j]);
-            } else if (Math.abs(testArray[i][j]) < testArray[i - 1][j]) {
-                testArray[i][j] = decreaseNumber(testArray[i][j]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i - 1][j] && testArray[i - 1][j] > 0) {
-                testArray[i - 1][j] = inverseAddition(testArray[i - 1][j]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i - 1][j] && testArray[i - 1][j] < 0) {
-                testArray[i - 1][j] = decreaseNumber(testArray[i - 1][j]);
-            }
-        }
-
-        if (testArray[i + 1][j] <= smallestNeighbor) {
-            if (testArray[i + 1][j] == Math.abs(waterDepth) && testArray[i + 1][j] > 0) {
-                testArray[i + 1][j] = inverseAddition(testArray[i + 1][j]);
-            } else if (Math.abs(testArray[i][j]) < testArray[i + 1][j]) {
-                testArray[i][j] = decreaseNumber(testArray[i][j]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i + 1][j] && testArray[i + 1][j] > 0) {
-                testArray[i + 1][j] = inverseAddition(testArray[i + 1][j]);
-            } else if (Math.abs(testArray[i][j]) > testArray[i + 1][j] && testArray[i + 1][j] < 0) {
-                testArray[i + 1][j] = decreaseNumber(testArray[i + 1][j]);
-            }
-        }
-
-
-        printTerrain(testArray);
+        int[][] array = {{-2, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
+        printTerrain(array);
+        System.out.println("Next phase");
+        updateTerrain(array);
 
 
     }
 
 
-//    public static int checkNeighbors(int... nums) {
-//        int smallestNextNeighbor = 0;
-//        for (int i = 0; i < 2; i++) {
-//            for (int j = 0; j < 2; j++) {
-//                if (i != j && (i + j) != 2) {
-//                    if (nums[0] > 0) {
-//                        if (){
-//
-//                        }
-//                    } else if (nums[1] > 0) {
-//
-//                    } else if (nums[0] < nums[2]) {
-//
-//                    } else if (nums[1] < nums[2]) {
-//
-//                    }
-//                }
-//            }
-//        }
-//        return smallestNextNeighbor;
-//    }
+    public static void updateTerrain(int[][] testArray){
+        int[] minValueAndCoordinates = returnMinAndCoordinates(testArray);
+        int min = minValueAndCoordinates[0];
+        int i = minValueAndCoordinates[1];
+        int j = minValueAndCoordinates[2];
+        int waterDepth = waterDepthTracker(min);
+        int smallestNeighbor = findNeighbors(i, j, testArray);
 
-    public static int findSmallestNeighbor(int... numbers) {
-        int smallestNeighbor = numbers[0];
-        for (int i = 0; i < numbers.length; i++) {
-            if (numbers[i] < smallestNeighbor) {
-                smallestNeighbor = numbers[i];
+
+        if (min == Math.abs(waterDepth) && min > 0) {
+            testArray[i][j] = inverseAddition(testArray[i][j]);
+        }else {
+
+
+            if (j < testArray.length - 1) {
+                if (testArray[i][j + 1] <= smallestNeighbor) {
+                    if (testArray[i][j + 1] == Math.abs(waterDepth) && testArray[i][j + 1] > 0) {
+                        testArray[i][j + 1] = inverseAddition(testArray[i][j + 1]);
+                    } else if (Math.abs(testArray[i][j]) < testArray[i][j + 1]) {
+                        testArray[i][j] = decreaseNumber(testArray[i][j]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i][j + 1] && testArray[i][j + 1] > 0) {
+                        testArray[i][j + 1] = inverseAddition(testArray[i][j + 1]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i][j + 1] && testArray[i][j + 1] < 0) {
+                        testArray[i][j + 1] = decreaseNumber(testArray[i][j + 1]);
+                    }
+                }
+            }
+
+            if (j > 0) {
+                if (testArray[i][j - 1] <= smallestNeighbor) {
+                    if (testArray[i][j - 1] == Math.abs(waterDepth) && testArray[i][j - 1] > 0) {
+                        testArray[i][j - 1] = inverseAddition(testArray[i][j - 1]);
+                    } else if (Math.abs(testArray[i][j]) < testArray[i][j - 1]) {
+                        testArray[i][j] = decreaseNumber(testArray[i][j]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i][j - 1] && testArray[i][j - 1] > 0) {
+                        testArray[i][j - 1] = inverseAddition(testArray[i][j - 1]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i][j - 1] && testArray[i][j - 1] < 0) {
+                        testArray[i][j - 1] = decreaseNumber(testArray[i][j - 1]);
+                    }
+                }
+            }
+
+            if (i > 0) {
+                if (testArray[i - 1][j] <= smallestNeighbor) {
+                    if (testArray[i - 1][j] == Math.abs(waterDepth) && testArray[i - 1][j] > 0) {
+                        testArray[i - 1][j] = inverseAddition(testArray[i - 1][j]);
+                    } else if (Math.abs(testArray[i][j]) < testArray[i - 1][j]) {
+                        testArray[i][j] = decreaseNumber(testArray[i][j]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i - 1][j] && testArray[i - 1][j] > 0) {
+                        testArray[i - 1][j] = inverseAddition(testArray[i - 1][j]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i - 1][j] && testArray[i - 1][j] < 0) {
+                        testArray[i - 1][j] = decreaseNumber(testArray[i - 1][j]);
+                    }
+                }
+            }
+
+            if (i < testArray.length - 1) {
+
+                if (testArray[i + 1][j] <= smallestNeighbor) {
+                    if (testArray[i + 1][j] == Math.abs(waterDepth) && testArray[i + 1][j] > 0) {
+                        testArray[i + 1][j] = inverseAddition(testArray[i + 1][j]);
+                    } else if (Math.abs(testArray[i][j]) < testArray[i + 1][j]) {
+                        testArray[i][j] = decreaseNumber(testArray[i][j]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i + 1][j] && testArray[i + 1][j] > 0) {
+                        testArray[i + 1][j] = inverseAddition(testArray[i + 1][j]);
+                    } else if (Math.abs(testArray[i][j]) > testArray[i + 1][j] && testArray[i + 1][j] < 0) {
+                        testArray[i + 1][j] = decreaseNumber(testArray[i + 1][j]);
+                    }
+                }
             }
         }
-        return smallestNeighbor;
+
+        int[][] newArray = testArray;
+        printTerrain(newArray);
+    }
+
+
+    public static int findNeighbors(int iCoordinate, int jCoordinate, int[][] numbers) {
+
+        int right = 10;
+        int left = 10;
+        int top = 10;
+        int bottom = 10;
+
+        if (jCoordinate > 0) {
+            left = numbers[iCoordinate][jCoordinate - 1];
+        }
+        if (iCoordinate > 0) {
+            top = numbers[iCoordinate - 1][jCoordinate];
+        }
+        if (iCoordinate < numbers.length - 1) {
+            bottom = numbers[iCoordinate + 1][jCoordinate];
+        }
+        if (jCoordinate < numbers.length - 1) {
+            right = numbers[iCoordinate][jCoordinate + 1];
+
+        }
+
+        int[] neighbors = {top, bottom, left, right};
+        return getSmallestNeighbor(neighbors);
+
+    }
+
+    public static int getSmallestNeighbor(int[] neighbors) {
+        int smallest = Integer.MAX_VALUE;
+        for (int i = 0; i < neighbors.length; i++) {
+            if (neighbors[i] < smallest) {
+                smallest = neighbors[i];
+            }
+        }
+        return smallest;
     }
 
     public static int inverseAddition(int number) {
@@ -177,8 +143,7 @@ public class Main {
 
 
     public static int waterDepthTracker(int min) {
-        int waterDepth = Math.abs(min) * (-1);
-        return waterDepth;
+        return Math.abs(min) * (-1);
     }
 
 
@@ -188,9 +153,10 @@ public class Main {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
                 if (array[i][j] < min) {
-                    min = minAndCoordinates[0];
-                    i = minAndCoordinates[1];
-                    j = minAndCoordinates[2];
+                    min = array[i][j];
+                    minAndCoordinates[0] = array[i][j];
+                    minAndCoordinates[1] = i;
+                    minAndCoordinates[2] = j;
                 }
 
             }
