@@ -6,57 +6,92 @@ public class Main {
 
     public static void main(String[] args) {
         int[][] randomArray = terrainGenerator(4);
-        int[] minInfo = returnMinAndCoordinates(randomArray);
-        int waterLevel = Math.abs(minInfo[0]) * (-1);
-        int iCoordinate = minInfo[1];
-        int jCoordinate = minInfo[2];
-        int min = minInfo[0];
-        int nextMin = 0;
+        int min = inverseAddition(returnMin(randomArray));
+        int waterLevel = Math.abs(min) * (-1);
         printTerrain(randomArray);
         System.out.println();
-
-        changeTerrain(randomArray, iCoordinate, jCoordinate, waterLevel);
-
-
-        if (waterLevel > randomArray[iCoordinate][jCoordinate]) {
-            adjustWaterLevel(randomArray, waterLevel, randomArray[iCoordinate][jCoordinate]);
-        }
-
-        minInfo = returnMinAndCoordinates(randomArray);
-        iCoordinate = minInfo[1];
-        jCoordinate = minInfo[2];
-
+        submerge(randomArray, min);
         printTerrain(randomArray);
         System.out.println();
-        nextMin = findNeighbors(iCoordinate, jCoordinate, randomArray, waterLevel);
+        int smallestNeighborValue = 0;
 
-        if (randomArray[decreaseNumber(iCoordinate)][jCoordinate] == nextMin) {
-            changeTerrain(randomArray, decreaseNumber(iCoordinate), jCoordinate, waterLevel);
+        for (int i = 0; i < randomArray.length; i++) {
+            for (int j = 0; j < randomArray.length; j++) {
+                if (randomArray[i][j] == min) {
+                    smallestNeighborValue = findSmallestNeighborsValue(i, j, randomArray);
+                    changeSmallNeighbors(randomArray, smallestNeighborValue, min);
+                }
+            }
         }
-        if (randomArray[increaseNumber(iCoordinate)][jCoordinate] == nextMin) {
-            changeTerrain(randomArray, increaseNumber(iCoordinate), jCoordinate, waterLevel);
-        }
-        if (randomArray[iCoordinate][decreaseNumber(jCoordinate)] == nextMin) {
-            changeTerrain(randomArray, decreaseNumber(jCoordinate), iCoordinate, waterLevel);
-        }
-        if (randomArray[iCoordinate][increaseNumber(jCoordinate)] == nextMin) {
-            changeTerrain(randomArray, increaseNumber(jCoordinate), iCoordinate, waterLevel);
-        }
-        adjustWaterLevel(randomArray, waterLevel, randomArray[iCoordinate][jCoordinate]);
-
+        adjustWaterLevel(randomArray, waterLevel, min);
+        printTerrain(randomArray);
 
 
     }
 
-    public static void changeTerrain(int[][] terrainArray, int iCoord, int jCoord, int waterLevel) {
 
-        int nextMin = findNeighbors(iCoord, jCoord, terrainArray, waterLevel);
-        if (nextMin > Math.abs(terrainArray[iCoord][jCoord]) && terrainArray[iCoord][jCoord] > 0) {
-            terrainArray[iCoord][jCoord] = inverseAddition(terrainArray[iCoord][jCoord]);
-        } else if (nextMin > Math.abs(terrainArray[iCoord][jCoord]) && terrainArray[iCoord][jCoord] < 0) {
-            decreaseNumber(terrainArray[iCoord][jCoord]);
-        } else if (nextMin <= Math.abs(terrainArray[iCoord][jCoord])) {
-            inverseAddition(nextMin);
+    public static void submerge(int[][] array, int min) {
+        boolean flag = true;
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                if (array[i][j] == Math.abs(min) && flag) {
+                    array[i][j] = inverseAddition(array[i][j]);
+                    flag = false;
+                }
+            }
+        }
+    }
+
+    public static void changeSmallNeighbors(int[][] terrainArray, int nextMin, int min) {
+        for (int i = 0; i < terrainArray.length; i++) {
+            for (int j = 0; j < terrainArray.length; j++) {
+
+// 4 db if nem jó, mert bemegy, de nem lesz egyenlő nextMin-nel
+                if (i > 0) {
+                    if (terrainArray[i - 1][j] == nextMin) {
+                        if (nextMin > 0 && nextMin > Math.abs(min)) {
+                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                        } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
+                            terrainArray[i - 1][j] = inverseAddition(terrainArray[i - 1][j]);
+                        } else if (nextMin < 0) {
+                            terrainArray[i - 1][j] = decreaseNumber(terrainArray[i - 1][j]);
+                        }
+                    }
+                } else if (i < terrainArray.length - 1) {
+
+                    if (terrainArray[i + 1][j] == nextMin) {
+                        if (nextMin > 0 && nextMin > Math.abs(min)) {
+                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                        } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
+                            terrainArray[i + 1][j] = inverseAddition(terrainArray[i + 1][j]);
+                        } else if (nextMin < 0) {
+                            terrainArray[i + 1][j] = decreaseNumber(terrainArray[i + 1][j]);
+                        }
+                    }
+                } else if (j > 0) {
+                    if (terrainArray[i][j - 1] == nextMin && j > 0) {
+                        if (nextMin > 0 && nextMin > Math.abs(min)) {
+                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                        } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
+                            terrainArray[i][j - 1] = inverseAddition(terrainArray[i][j - 1]);
+                        } else if (nextMin < 0) {
+                            terrainArray[i][j - 1] = decreaseNumber(terrainArray[i][j - 1]);
+                        }
+                    }
+                } else if (j < terrainArray.length - 1) {
+
+                    if (terrainArray[i][j + 1] == nextMin) {
+                        if (nextMin > 0 && nextMin > Math.abs(min)) {
+                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                        } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
+                            terrainArray[i][j + 1] = inverseAddition(terrainArray[i][j + 1]);
+                        } else if (nextMin < 0) {
+                            terrainArray[i][j + 1] = decreaseNumber(terrainArray[i][j + 1]);
+                        }
+                    }
+
+                }
+            }
         }
     }
 
@@ -64,7 +99,7 @@ public class Main {
     public static void adjustWaterLevel(int[][] array, int oldWaterLevel, int newWaterLevel) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
-                if (array[i][j] == oldWaterLevel) {
+                if (array[i][j] == oldWaterLevel && oldWaterLevel > newWaterLevel) {
                     array[i][j] = newWaterLevel;
                 }
             }
@@ -83,40 +118,40 @@ public class Main {
     }
 
 
-    public static int findNeighbors(int iCoordinate, int jCoordinate, int[][] numbers, int waterL) {
+    public static int findSmallestNeighborsValue(int iCoordinate, int jCoordinate, int[][] numbers) {
 
         int right = 10;
         int left = 10;
         int top = 10;
         int bottom = 10;
 
-        if (jCoordinate > 0 && numbers[iCoordinate][jCoordinate - 1] > waterL) {
+        if (jCoordinate > 0) {
             left = numbers[iCoordinate][jCoordinate - 1];
         } else {
             left = 10;
         }
-        if (iCoordinate > 0 && numbers[iCoordinate - 1][jCoordinate] > waterL) {
+        if (iCoordinate > 0) {
             top = numbers[iCoordinate - 1][jCoordinate];
         } else {
             top = 10;
         }
-        if (iCoordinate < numbers.length - 1 && numbers[iCoordinate + 1][jCoordinate] > waterL) {
+        if (iCoordinate < numbers.length - 1) {
             bottom = numbers[iCoordinate + 1][jCoordinate];
         } else {
             bottom = 10;
         }
-        if (jCoordinate < numbers.length - 1 && numbers[iCoordinate][jCoordinate + 1] > waterL) {
+        if (jCoordinate < numbers.length - 1) {
             right = numbers[iCoordinate][jCoordinate + 1];
         } else {
             right = 10;
         }
 
         int[] neighbors = {top, bottom, left, right};
-        return getSmallestNeighbor(neighbors);
+        return getSmallestNumber(neighbors);
 
     }
 
-    public static int getSmallestNeighbor(int[] neighbors) {
+    public static int getSmallestNumber(int[] neighbors) {
         int smallest = neighbors[0];
         for (int i = 0; i < neighbors.length; i++) {
             if (neighbors[i] < smallest) {
@@ -135,40 +170,13 @@ public class Main {
     }
 
     public static int decreaseNumber(int number) {
-        if (number < 0) {
-            number--;
-        }
-        return number;
+        return number--;
     }
 
     public static int increaseNumber(int number) {
         return number++;
     }
 
-
-    public static int waterDepthTracker(int min) {
-        return Math.abs(min) * (-1);
-    }
-
-
-    public static int[] returnMinAndCoordinates(int[][] array) {
-        int[] minAndCoordinates = new int[3];
-        int min = 5;
-        int waterLevel = 0;
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] < min && array[i][j] > waterLevel) {
-                    min = array[i][j];
-                    minAndCoordinates[0] = array[i][j];
-                    minAndCoordinates[1] = i;
-                    minAndCoordinates[2] = j;
-                    waterLevel = waterDepthTracker(min);
-                }
-
-            }
-        }
-        return minAndCoordinates;
-    }
 
     public static int returnMin(int[][] array) {
         int min = array[0][0];
