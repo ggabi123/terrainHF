@@ -11,78 +11,55 @@ public class Main {
         int iCoordinate = minInfo[1];
         int jCoordinate = minInfo[2];
         int min = minInfo[0];
+        int nextMin = 0;
         printTerrain(randomArray);
+        System.out.println();
+
+        changeTerrain(randomArray, iCoordinate, jCoordinate, waterLevel);
 
 
-        for (int i = 0; i < randomArray.length; i++) {
-            for (int j = 0; j < randomArray.length; j++) {
-
-                int smallestNeighbor = findNeighbors(i, j, randomArray, waterLevel);
-
-                if (randomArray[i][j] == Math.abs(waterLevel) && randomArray[i][j] > 0 && randomArray[i][j] == min) {
-                    randomArray[i][j] = inverseAddition(randomArray[i][j]);
-                } else if (randomArray[i][j] == smallestNeighbor) {
-                    if (j < randomArray.length - 1 && randomArray[i][j + 1] > waterLevel) {
-
-                        if (randomArray[i][j + 1] == smallestNeighbor) {
-                            if (randomArray[i][j + 1] > Math.abs(randomArray[i][j])) {
-                                randomArray[i][j] = decreaseNumber(randomArray[i][j]);
-                                if (waterLevel > randomArray[i][j]) {
-                                    decreaseNumber(waterLevel);
-                                }
-                            } else if (randomArray[i][j + 1] == Math.abs(randomArray[i][j]) || randomArray[i][j + 1] < Math.abs(randomArray[i][j])) {
-                                randomArray[i][j + 1] = inverseAddition(randomArray[i][j + 1]);
-                                increaseNumber(j);
-                            }
-                        } else if ((j < randomArray.length - 1 && j > 0 && randomArray[i][j - 1] > waterLevel)) {
-                            if (randomArray[i][j - 1] == smallestNeighbor) {
-                                if (randomArray[i][j - 1] > Math.abs(randomArray[i][j])) {
-                                    randomArray[i][j] = decreaseNumber(randomArray[i][j]);
-                                } else if (randomArray[i][j - 1] == Math.abs(randomArray[i][j]) || randomArray[i][j - 1] < Math.abs(randomArray[i][j])) {
-                                    randomArray[i][j - 1] = inverseAddition(randomArray[i][j - 1]);
-                                    decreaseNumber(j);
-                                }
-                            }
-                        } else if (i < randomArray.length - 1 && randomArray[i + 1][j] > waterLevel) {
-
-                            if (randomArray[i + 1][j] == smallestNeighbor) {
-                                if (randomArray[i + 1][j] > Math.abs(randomArray[i][j])) {
-                                    randomArray[i][j] = decreaseNumber(randomArray[i][j]);
-
-                                } else if (randomArray[i + 1][j] == Math.abs(randomArray[i][j]) || randomArray[i + 1][j] < Math.abs(randomArray[i][j])) {
-                                    randomArray[i + 1][j] = inverseAddition(randomArray[i + 1][j]);
-                                    increaseNumber(i);
-                                }
-                            } else if ((i < randomArray.length - 1 && i > 0 && randomArray[i - 1][j] > waterLevel)) {
-                                if (randomArray[i - 1][j] == smallestNeighbor) {
-                                    if (randomArray[i - 1][j] > Math.abs(randomArray[i][j])) {
-                                        randomArray[i][j] = decreaseNumber(randomArray[i][j]);
-
-                                    } else if (randomArray[i - 1][j] == Math.abs(randomArray[i][j]) || randomArray[i - 1][j] < Math.abs(randomArray[i][j])) {
-                                        randomArray[i - 1][j] = inverseAddition(randomArray[i - 1][j]);
-                                        decreaseNumber(i);
-                                    }
-                                }
-                            }
-
-                        }
-
-                    }
-                }
-                if (waterLevel > randomArray[i][j]) {
-                    adjustWaterLevel(randomArray, waterLevel, randomArray[i][j]);
-                    decreaseNumber(waterLevel);
-                }
-
-                min = returnMin(randomArray);
-                System.out.println("Next phase");
-                printTerrain(randomArray);
-
-            }
+        if (waterLevel > randomArray[iCoordinate][jCoordinate]) {
+            adjustWaterLevel(randomArray, waterLevel, randomArray[iCoordinate][jCoordinate]);
         }
+
+        minInfo = returnMinAndCoordinates(randomArray);
+        iCoordinate = minInfo[1];
+        jCoordinate = minInfo[2];
+
+        printTerrain(randomArray);
+        System.out.println();
+        nextMin = findNeighbors(iCoordinate, jCoordinate, randomArray, waterLevel);
+
+        if (randomArray[decreaseNumber(iCoordinate)][jCoordinate] == nextMin) {
+            changeTerrain(randomArray, decreaseNumber(iCoordinate), jCoordinate, waterLevel);
+        }
+        if (randomArray[increaseNumber(iCoordinate)][jCoordinate] == nextMin) {
+            changeTerrain(randomArray, increaseNumber(iCoordinate), jCoordinate, waterLevel);
+        }
+        if (randomArray[iCoordinate][decreaseNumber(jCoordinate)] == nextMin) {
+            changeTerrain(randomArray, decreaseNumber(jCoordinate), iCoordinate, waterLevel);
+        }
+        if (randomArray[iCoordinate][increaseNumber(jCoordinate)] == nextMin) {
+            changeTerrain(randomArray, increaseNumber(jCoordinate), iCoordinate, waterLevel);
+        }
+        adjustWaterLevel(randomArray, waterLevel, randomArray[iCoordinate][jCoordinate]);
+
 
 
     }
+
+    public static void changeTerrain(int[][] terrainArray, int iCoord, int jCoord, int waterLevel) {
+
+        int nextMin = findNeighbors(iCoord, jCoord, terrainArray, waterLevel);
+        if (nextMin > Math.abs(terrainArray[iCoord][jCoord]) && terrainArray[iCoord][jCoord] > 0) {
+            terrainArray[iCoord][jCoord] = inverseAddition(terrainArray[iCoord][jCoord]);
+        } else if (nextMin > Math.abs(terrainArray[iCoord][jCoord]) && terrainArray[iCoord][jCoord] < 0) {
+            decreaseNumber(terrainArray[iCoord][jCoord]);
+        } else if (nextMin <= Math.abs(terrainArray[iCoord][jCoord])) {
+            inverseAddition(nextMin);
+        }
+    }
+
 
     public static void adjustWaterLevel(int[][] array, int oldWaterLevel, int newWaterLevel) {
         for (int i = 0; i < array.length; i++) {
