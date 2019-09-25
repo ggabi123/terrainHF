@@ -5,26 +5,27 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-        int[][] randomArray = terrainGenerator(4);
+        //int[][] randomArray = terrainGenerator(4);
+        int[][] randomArray = {{-3, -3, -3, 4}, {-3, -3, 4, 4}, {-3, -3, -3, -3}, {-3, -3, -3, -3}};
         int min = inverseAddition(returnMin(randomArray));
-        int waterLevel = Math.abs(min) * (-1);
+        int waterLevel = inverseAddition(Math.abs(min));
         printTerrain(randomArray);
         System.out.println();
-        submerge(randomArray, min);
-        printTerrain(randomArray);
-        System.out.println();
-        int smallestNeighborValue = 0;
 
-        for (int i = 0; i < randomArray.length; i++) {
-            for (int j = 0; j < randomArray.length; j++) {
-                if (randomArray[i][j] == min) {
-                    smallestNeighborValue = findSmallestNeighborsValue(i, j, randomArray);
-                    changeSmallNeighbors(randomArray, smallestNeighborValue, min);
-                }
-            }
-        }
+
+        // submerge(randomArray, min);
+        printTerrain(randomArray);
+
+
+        System.out.println();
+        int smallestNeighborValue;
+
+
+        smallestNeighborValue = findSmallestNeighborsValue(randomArray, min);
+        changeSmallNeighbors(randomArray, smallestNeighborValue, min, waterLevel);
         adjustWaterLevel(randomArray, waterLevel, min);
         printTerrain(randomArray);
+        System.out.println();
 
 
     }
@@ -42,54 +43,56 @@ public class Main {
         }
     }
 
-    public static void changeSmallNeighbors(int[][] terrainArray, int nextMin, int min) {
+    public static void changeSmallNeighbors(int[][] terrainArray, int nextMin, int min, int waterLevel) {
         for (int i = 0; i < terrainArray.length; i++) {
             for (int j = 0; j < terrainArray.length; j++) {
+                if (terrainArray[i][j] == min || (terrainArray[i][j] < Math.abs(min) && terrainArray[i][j] > 0)) {
 
-// 4 db if nem jó, mert bemegy, de nem lesz egyenlő nextMin-nel
-                if (i > 0) {
-                    if (terrainArray[i - 1][j] == nextMin) {
+
+                    if (i != 0 && (terrainArray[i - 1][j] == nextMin)) {
                         if (nextMin > 0 && nextMin > Math.abs(min)) {
-                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                            terrainArray[i][j]--;
+                            adjustWaterLevel(terrainArray, waterLevel, terrainArray[i][j]);
+                            break;
                         } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
                             terrainArray[i - 1][j] = inverseAddition(terrainArray[i - 1][j]);
                         } else if (nextMin < 0) {
-                            terrainArray[i - 1][j] = decreaseNumber(terrainArray[i - 1][j]);
+                            terrainArray[i - 1][j]--;
                         }
                     }
-                } else if (i < terrainArray.length - 1) {
-
-                    if (terrainArray[i + 1][j] == nextMin) {
+                    if (i != terrainArray.length - 1 && (terrainArray[i + 1][j] == nextMin)) {
                         if (nextMin > 0 && nextMin > Math.abs(min)) {
-                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                            terrainArray[i][j]--;
+                            adjustWaterLevel(terrainArray, waterLevel, terrainArray[i][j]);
+                            break;
                         } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
                             terrainArray[i + 1][j] = inverseAddition(terrainArray[i + 1][j]);
                         } else if (nextMin < 0) {
-                            terrainArray[i + 1][j] = decreaseNumber(terrainArray[i + 1][j]);
+                            terrainArray[i + 1][j]--;
                         }
                     }
-                } else if (j > 0) {
-                    if (terrainArray[i][j - 1] == nextMin && j > 0) {
+                    if (j != 0 && (terrainArray[i][j - 1] == nextMin)) {
                         if (nextMin > 0 && nextMin > Math.abs(min)) {
-                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                            terrainArray[i][j]--;
+                            adjustWaterLevel(terrainArray, waterLevel, terrainArray[i][j]);
+                            break;
                         } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
                             terrainArray[i][j - 1] = inverseAddition(terrainArray[i][j - 1]);
                         } else if (nextMin < 0) {
-                            terrainArray[i][j - 1] = decreaseNumber(terrainArray[i][j - 1]);
+                            terrainArray[i][j - 1]--;
                         }
                     }
-                } else if (j < terrainArray.length - 1) {
-
-                    if (terrainArray[i][j + 1] == nextMin) {
+                    if (j != terrainArray.length - 1 && (terrainArray[i][j + 1] == nextMin)) {
                         if (nextMin > 0 && nextMin > Math.abs(min)) {
-                            terrainArray[i][j] = decreaseNumber(terrainArray[i][j]);
+                            terrainArray[i][j]--;
+                            adjustWaterLevel(terrainArray, waterLevel, terrainArray[i][j]);
+                            break;
                         } else if (nextMin > 0 && nextMin <= Math.abs(min)) {
                             terrainArray[i][j + 1] = inverseAddition(terrainArray[i][j + 1]);
                         } else if (nextMin < 0) {
-                            terrainArray[i][j + 1] = decreaseNumber(terrainArray[i][j + 1]);
+                            terrainArray[i][j + 1]--;
                         }
                     }
-
                 }
             }
         }
@@ -118,29 +121,33 @@ public class Main {
     }
 
 
-    public static int findSmallestNeighborsValue(int iCoordinate, int jCoordinate, int[][] numbers) {
+    public static int findSmallestNeighborsValue(int[][] numbers, int min) {
+
+        int[] minIAndJ = returnMinCoordinates(numbers);
+        int iCoordinate = minIAndJ[0];
+        int jCoordinate = minIAndJ[1];
 
         int right = 10;
         int left = 10;
         int top = 10;
         int bottom = 10;
 
-        if (jCoordinate > 0) {
+        if (jCoordinate > 0 && numbers[iCoordinate][jCoordinate - 1] > min) {
             left = numbers[iCoordinate][jCoordinate - 1];
         } else {
             left = 10;
         }
-        if (iCoordinate > 0) {
+        if (iCoordinate > 0 && numbers[iCoordinate - 1][jCoordinate] > min) {
             top = numbers[iCoordinate - 1][jCoordinate];
         } else {
             top = 10;
         }
-        if (iCoordinate < numbers.length - 1) {
+        if (iCoordinate < numbers.length - 1 && numbers[iCoordinate + 1][jCoordinate] > min) {
             bottom = numbers[iCoordinate + 1][jCoordinate];
         } else {
             bottom = 10;
         }
-        if (jCoordinate < numbers.length - 1) {
+        if (jCoordinate < numbers.length - 1 && numbers[iCoordinate][jCoordinate + 1] > min) {
             right = numbers[iCoordinate][jCoordinate + 1];
         } else {
             right = 10;
@@ -169,15 +176,6 @@ public class Main {
         }
     }
 
-    public static int decreaseNumber(int number) {
-        return number--;
-    }
-
-    public static int increaseNumber(int number) {
-        return number++;
-    }
-
-
     public static int returnMin(int[][] array) {
         int min = array[0][0];
         for (int i = 0; i < array.length; i++) {
@@ -188,6 +186,20 @@ public class Main {
             }
         }
         return min;
+    }
+
+    public static int[] returnMinCoordinates(int[][] array) {
+        int min = array[0][0];
+        int[] minCoordinates = new int[2];
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] <= min) {
+                    minCoordinates[0] = i;
+                    minCoordinates[1] = j;
+                }
+            }
+        }
+        return minCoordinates;
     }
 
 
