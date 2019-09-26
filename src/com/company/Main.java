@@ -6,47 +6,49 @@ public class Main {
 
     public static void main(String[] args) {
 
-        startTerrainChange(4);
+        startTerrainChange();
 
 
     }
 
 
-    // find smallest neighbor around min
-    // if Math.abs(smallestNeighbor) <= Math.abs(min)
-    // then turn smallest neighbor(s) negative/submerge
-
-    //if Math.abs(smallestNeighbor) > Math.abs(min)
-    // then min--
-
-    // update waterLevel - waterLevel needs to be the same as deepest point/smallest num
-
-    // repeat it until all numbers reach the smallest num/waterLevel (negative version of the highest absolute num in the array)
-
-
-    public static void startTerrainChange(int arraySize) {
-        int[][] array = generateTerrain(arraySize);
+    public static void startTerrainChange() {
+        //(int arraySize)
+        //int[][] array = generateTerrain(arraySize);
+        int[][] array = {{1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
         int min = findMinValue(array);
         springItUp(array, min);
         printArray(array);
         System.out.println();
-        int waterLevel = Math.abs(min) * (-1);
-        for (int i = 0; i < 15; i++) {
-            changeSmallestNeighbors(array, waterLevel);
-            updateWaterLevelOnTerrain(array, findMinValue(array), waterLevel);
+        int waterLevel = findMinValue(array);
+        while (waterLevel > -4) {
+            waterLevel = findMinValue(array);
+            changeSmallestNeighbors(array);
+            updateWaterLevelOnTerrain(array, waterLevel);
             printArray(array);
             System.out.println();
         }
     }
 
     public static int[] getWaterBoarderCoordinates(int[][] array) {
-        // give back the coordinates of the number that is boardering the smallest number that is not < 0
         int[] coordinates = new int[2];
+        int min = findMinValue(array);
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
                 if (array[i][j] < 0) {
-                    if ((moveLeft(array, i, j) > 0 && j > 0) || (moveRight(array, i, j) > 0 && j < array.length - 1) ||
-                            (moveDown(array, i, j) > 0 && i < array.length - 1) || (moveUp(array, i, j) > 0 && i > 0)){
+                    if (moveLeft(array, i, j) > min && j > 0) {
+                        coordinates[0] = i;
+                        coordinates[1] = j;
+                    }
+                    if (moveRight(array, i, j) > min && j < array.length - 1) {
+                        coordinates[0] = i;
+                        coordinates[1] = j;
+                    }
+                    if (moveDown(array, i, j) > min && i < array.length - 1) {
+                        coordinates[0] = i;
+                        coordinates[1] = j;
+                    }
+                    if (moveUp(array, i, j) > min && i > 0) {
                         coordinates[0] = i;
                         coordinates[1] = j;
                     }
@@ -57,43 +59,51 @@ public class Main {
     }
 
 
-    public static int[][] changeSmallestNeighbors(int[][] array, int waterLevel) {
-        // updated i, j needs to be computed
+    public static int[][] changeSmallestNeighbors(int[][] array) {
+        int waterLevel = findMinValue(array);
         int smallestNeighbor = findSmallestNeighborValue(array, waterLevel);
-        int result;
-        int[]coordinates = getWaterBoarderCoordinates(array);
+        int[] coordinates = getWaterBoarderCoordinates(array);
         int i = coordinates[0];
         int j = coordinates[1];
-        if (i >= 0 && i < array.length - 1 && smallestNeighbor == moveDown(array, i, j)) {
+        int examinedNumber = array[i][j];
+        int neighbor;
+        int result;
+
+
+        if (i < array.length - 1 && smallestNeighbor == moveDown(array, i, j)) {
             result = changeValue(array[i][j], moveDown(array, i, j));
-            if (result > 0) {
+            neighbor = moveDown(array, i, j);
+            if (neighbor > Math.abs(examinedNumber)) {
                 array[i][j] = result;
             } else {
                 array[i + 1][j] = result;
             }
         }
-        if (i > 0 && i < array.length && smallestNeighbor == moveUp(array, i, j)) {
+        if (i > 0 && smallestNeighbor == moveUp(array, i, j)) {
             result = changeValue(array[i][j], moveUp(array, i, j));
-            if (result > 0) {
+            neighbor = moveUp(array, i, j);
+            if (neighbor > Math.abs(examinedNumber)) {
                 array[i][j] = result;
             } else {
                 array[i - 1][j] = result;
             }
         }
-        if (j >= 0 && j < array.length - 1 && smallestNeighbor == moveRight(array, i, j)) {
+        if (j < array.length - 1 && smallestNeighbor == moveRight(array, i, j)) {
             result = changeValue(array[i][j], moveRight(array, i, j));
-            if (result > 0) {
+            neighbor = moveRight(array, i, j);
+            if (neighbor > Math.abs(examinedNumber)) {
                 array[i][j] = result;
             } else {
                 array[i][j + 1] = result;
             }
         }
-        if (j > 0 && i < array.length && smallestNeighbor == moveLeft(array, i, j)) {
+        if (j > 0 && smallestNeighbor == moveLeft(array, i, j)) {
             result = changeValue(array[i][j], moveLeft(array, i, j));
-            if (result > 0) {
-                array[i][j] = result;
+            neighbor = moveLeft(array, i, j);
+            if (neighbor > Math.abs(examinedNumber)) {
             } else {
                 array[i][j - 1] = result;
+
             }
         }
 
@@ -147,32 +157,36 @@ public class Main {
     }
 
     public static int moveUp(int[][] array, int i, int j) {
+        int number = Integer.MAX_VALUE;
+
         if (i > 0 && i < array.length) {
-            array[i][j] = array[i--][j];
+            number = array[i - 1][j];
         }
-        return array[i][j];
+        return number;
     }
 
     public static int moveDown(int[][] array, int i, int j) {
-        if (i > -1 && i < array.length - 1) {
-            array[i][j] = array[i++][j];
+        int number = Integer.MAX_VALUE;
+        if (i >= 0 && i < array.length - 1) {
+            number = array[i + 1][j];
         }
-        return array[i][j];
+        return number;
     }
 
     public static int moveLeft(int[][] array, int i, int j) {
+        int number = Integer.MAX_VALUE;
         if (j > 0 && i < array.length) {
-            array[i][j] = array[i][j--];
+            number = array[i][j - 1];
         }
-        return array[i][j];
+        return number;
     }
 
     public static int moveRight(int[][] array, int i, int j) {
-
-        if (j > -1 && j < array.length - 1) {
-            array[i][j] = array[i][j++];
+        int number = Integer.MAX_VALUE;
+        if (j >= 0 && j < array.length - 1) {
+            number = array[i][j + 1];
         }
-        return array[i][j];
+        return number;
     }
 
 
@@ -181,21 +195,26 @@ public class Main {
         if (Math.abs(alreadyUnderWater) < neighborNumber) {
             alreadyUnderWater--;
             result = alreadyUnderWater;
-        } else if (Math.abs(alreadyUnderWater) >= neighborNumber) {
+        } else if (Math.abs(alreadyUnderWater) >= neighborNumber && neighborNumber > 0) {
             neighborNumber *= (-1);
             result = neighborNumber;
-        } else if (alreadyUnderWater < neighborNumber && neighborNumber < 0) {
+        } else if (Math.abs(alreadyUnderWater) >= neighborNumber && neighborNumber < 0) {
             neighborNumber--;
             result = neighborNumber;
         }
         return result;
     }
 
-    public static int[][] updateWaterLevelOnTerrain(int[][] array, int newWaterLevel, int oldWaterLevel) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                if (array[i][j] == oldWaterLevel && newWaterLevel < oldWaterLevel) {
-                    array[i][j] = newWaterLevel;
+    public static int[][] updateWaterLevelOnTerrain(int[][] array, int waterLevel) {
+        int min = findMinValue(array);
+        int smallestNeigbor = findSmallestNeighborValue(array, min);
+        if (min < waterLevel) {
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array.length; j++) {
+                    if (array[i][j] == smallestNeigbor && smallestNeigbor < 0) {
+                        array[i][j] = min;
+
+                    }
                 }
             }
         }
