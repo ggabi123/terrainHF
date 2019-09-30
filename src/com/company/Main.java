@@ -5,11 +5,11 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-        startTerrain();
+        startTerrain(4);
     }
 
-    public static void startTerrain() {
-        int[][] array = generateTerrain(4);
+    public static void startTerrain(int size) {
+        int[][] array = generateTerrain(size);
         printArray(array);
         printArray(springUp(array));
         while (findPositive(array)) {
