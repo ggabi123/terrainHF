@@ -1,5 +1,3 @@
-
-
 package com.company;
 
 import java.util.Random;
@@ -7,73 +5,120 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-
-        startTerrainChange(4);
-
-
+        startTerrain();
     }
 
-
-    public static void startTerrainChange(int arraySize) {
-        //(int arraySize)
-        //int[][] array = {{1, 2, 3, 4}, {2, 3, 4, 4}, {3, 3, 3, 3}, {2, 1, 2, 3}};
-        int[][] array = generateTerrain(arraySize);
-        int min = findMinValue(array);
-        springItUp(array, min);
+    public static void startTerrain() {
+        int[][] array = generateTerrain(4);
         printArray(array);
-        System.out.println();
-        for (int i = 0; i < 18; i++) {
-            int[] minCoordinates = getMinCoordinates(array);
-            int minCoordinatesI = minCoordinates[0];
-            int minCoordinatesJ = minCoordinates[1];
-            changeSmallestNeighborsValue(array, minCoordinatesI, minCoordinatesJ);
-            updateWaterLevelOnTerrain(array);
-            printArray(array);
-            System.out.println();
+        printArray(springUp(array));
+        while (findPositive(array)) {
+            printArray(replaceOldArray(array, progressMaker(array)));
+
         }
     }
 
 
+    public static int[][] progressMaker(int[][] array) {
+        int[][] newArray = new int[array.length][array.length];
+        int min = findMinValue(array);
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                int top = moveUp(array, i, j);
+                int bottom = moveDown(array, i, j);
+                int left = moveLeft(array, i, j);
+                int right = moveRight(array, i, j);
+                int secondSmallest = findSmallestNextToNegatives(array);
+                int newNum;
+                if (array[i][j] < 0) {
+                    if (secondSmallest > Math.abs(array[i][j])) {
+                        newArray[i][j] = array[i][j] - 1;
+                    } else {
 
-    public static void changeSmallestNeighborsValue(int[][] array, int currentNumberI, int currentNumberJ) {
-        int smallestNeighborValue = findSmallestNeighborValue(array, currentNumberI, currentNumberJ);
-        int top = moveUp(array, currentNumberI, currentNumberJ);
-        int bottom = moveDown(array, currentNumberI, currentNumberJ);
-        int left = moveLeft(array, currentNumberI, currentNumberJ);
-        int right = moveRight(array, currentNumberI, currentNumberJ);
-        int newNum;
-        if (smallestNeighborValue > Math.abs(array[currentNumberI][currentNumberJ])) {
-            array[currentNumberI][currentNumberJ] = array[currentNumberI][currentNumberJ] - 1;
-        } else {
-
-            if (top == smallestNeighborValue || (top > 0 && top < Math.abs( array[currentNumberI][currentNumberJ]))) {
-                newNum = changeValue(array[currentNumberI][currentNumberJ], top);
-                if (top < Math.abs(array[currentNumberI][currentNumberJ]) || top > array[currentNumberI][currentNumberJ]) {
-                    array[currentNumberI - 1][currentNumberJ] = newNum;
-                }
-            }
-            if (bottom == smallestNeighborValue || (bottom > 0 && bottom < Math.abs( array[currentNumberI][currentNumberJ]))) {
-                newNum = changeValue(array[currentNumberI][currentNumberJ], bottom);
-                if (bottom > array[currentNumberI][currentNumberJ] || bottom < Math.abs(array[currentNumberI][currentNumberJ])) {
-                    array[currentNumberI + 1][currentNumberJ] = newNum;
-                }
-            }
-            if (right == smallestNeighborValue || (right > 0 && right < Math.abs( array[currentNumberI][currentNumberJ]))) {
-                newNum = changeValue(array[currentNumberI][currentNumberJ], right);
-                if (right > array[currentNumberI][currentNumberJ] || right < Math.abs(array[currentNumberI][currentNumberJ])) {
-                    array[currentNumberI][currentNumberJ + 1] = newNum;
-                }
-            }
-            if (left == smallestNeighborValue || (left > 0 && left < Math.abs( array[currentNumberI][currentNumberJ]))) {
-                newNum = changeValue(array[currentNumberI][currentNumberJ], left);
-                if (left < Math.abs(array[currentNumberI][currentNumberJ]) || left > Math.abs(array[currentNumberI][currentNumberJ])) {
-                    array[currentNumberI][currentNumberJ - 1] = newNum;
+                        if (top == secondSmallest && top < 10 && top > min) {
+                            newNum = changeValue(array[i][j], top);
+                            if (top < Math.abs(array[i][j]) || top > array[i][j]) {
+                                newArray[i - 1][j] = newNum;
+                            }
+                        }
+                        if (bottom == secondSmallest && bottom < 10 && bottom > min) {
+                            newNum = changeValue(array[i][j], bottom);
+                            if (bottom > array[i][j] || bottom < Math.abs(array[i][j])) {
+                                newArray[i + 1][j] = newNum;
+                            }
+                        }
+                        if (right == secondSmallest && right < 10 && right > min) {
+                            newNum = changeValue(array[i][j], right);
+                            if (right > array[i][j] || right < Math.abs(array[i][j])) {
+                                newArray[i][j + 1] = newNum;
+                            }
+                        }
+                        if (left == secondSmallest && left < 10 && left > min) {
+                            newNum = changeValue(array[i][j], left);
+                            if (left < Math.abs(array[i][j]) || left > Math.abs(array[i][j])) {
+                                newArray[i][j - 1] = newNum;
+                            }
+                        }
+                    }
                 }
             }
         }
-
+        return newArray;
     }
 
+    public static boolean findPositive(int[][] array) {
+        boolean flag = false;
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                if (array[i][j] > 0) {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
+    }
+
+    public static int[][] replaceOldArray(int[][] array, int[][] newArr) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                if (array[i][j] != newArr[i][j] && newArr[i][j] < 0) {
+                    array[i][j] = newArr[i][j];
+                }
+            }
+        }
+        return array;
+    }
+
+
+    public static int changeValue(int examinedNumber, int neighborNumber) {
+        int result = 0;
+        if (examinedNumber > 0) {
+            result = examinedNumber * (-1);
+        } else if (Math.abs(examinedNumber) < neighborNumber && examinedNumber < 0) {
+            result = examinedNumber - 1;
+        } else if (neighborNumber < 0) {
+            result = neighborNumber - 1;
+        } else if (neighborNumber > 0) {
+            result = neighborNumber * (-1);
+        }
+        return result;
+    }
+
+
+    public static int findSmallestNextToNegatives(int[][] array) {
+        int secondSmallest = 10;
+        int min = findMinValue(array);
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                int smallestNeighbor = findSmallestNeighborValue(array, i, j);
+                if (smallestNeighbor < 0 && array[i][j] > min && array[i][j] <= Math.abs(secondSmallest) && Math.abs(array[i][j]) <= Math.abs(smallestNeighbor)) {
+                    secondSmallest = array[i][j];
+                }
+            }
+        }
+        return secondSmallest;
+    }
 
     public static int findSmallestNeighborValue(int[][] array, int iIndex, int jIndex) {
         int right;
@@ -82,22 +127,22 @@ public class Main {
         int bottom;
         int waterLevel = findMinValue(array);
 
-        if (moveDown(array, iIndex, jIndex) > waterLevel) {
+        if (moveDown(array, iIndex, jIndex) >= waterLevel) {
             bottom = moveDown(array, iIndex, jIndex);
         } else {
             bottom = 10;
         }
-        if (moveUp(array, iIndex, jIndex) > waterLevel) {
+        if (moveUp(array, iIndex, jIndex) >= waterLevel) {
             top = moveUp(array, iIndex, jIndex);
         } else {
             top = 10;
         }
-        if (moveLeft(array, iIndex, jIndex) > waterLevel) {
+        if (moveLeft(array, iIndex, jIndex) >= waterLevel) {
             left = moveLeft(array, iIndex, jIndex);
         } else {
             left = 10;
         }
-        if (moveRight(array, iIndex, jIndex) > waterLevel) {
+        if (moveRight(array, iIndex, jIndex) >= waterLevel) {
             right = moveRight(array, iIndex, jIndex);
         } else {
             right = 10;
@@ -118,118 +163,52 @@ public class Main {
         return smallest;
     }
 
-    public static int moveUp(int[][] array, int i, int j) {
+
+    public static int moveLeft(int[][] array, int iCoord, int jCoord) {
         int result = 10;
-        if (i > 0 && i < array.length) {
-            result = array[i - 1][j];
+        if (jCoord > 0) {
+            result = array[iCoord][jCoord - 1];
         }
         return result;
     }
 
-    public static int moveDown(int[][] array, int i, int j) {
+    public static int moveRight(int[][] array, int iCoord, int jCoord) {
         int result = 10;
-        if (i >= 0 && i < array.length - 1) {
-            result = array[i + 1][j];
+        if (jCoord < array.length - 1) {
+            result = array[iCoord][jCoord + 1];
         }
         return result;
     }
 
-    public static int moveLeft(int[][] array, int i, int j) {
+    public static int moveUp(int[][] array, int iCoord, int jCoord) {
         int result = 10;
-        if (j > 0 && i < array.length) {
-            result = array[i][j - 1];
+        if (iCoord > 0) {
+            result = array[iCoord - 1][jCoord];
         }
         return result;
     }
 
-    public static int moveRight(int[][] array, int i, int j) {
+    public static int moveDown(int[][] array, int iCoord, int jCoord) {
         int result = 10;
-        if (j >= 0 && j < array.length - 1) {
-            result = array[i][j + 1];
+        if (iCoord < array.length - 1) {
+            result = array[iCoord + 1][jCoord];
         }
         return result;
     }
 
-
-
-    public static int changeValue(int examinedNumber, int neighborNumber) {
-        int result = 0;
-        if (examinedNumber > 0) {
-            result = examinedNumber * (-1);
-        } else if (Math.abs(examinedNumber) < neighborNumber && examinedNumber < 0) {
-            result = examinedNumber - 1;
-        } else if (neighborNumber < 0 ) {
-            result = neighborNumber - 1;
-        } else if (neighborNumber > 0) {
-            result = neighborNumber * (-1);
-        }
-        return result;
-    }
-
-    public static int[] getMinCoordinates(int[][] array) {
+    public static int[][] springUp(int[][] array) {
         int min = findMinValue(array);
-        int[] minCoordinates = new int[2];
+        boolean flag = true;
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
-                if (array[i][j] == min) {
-                    minCoordinates[0] = i;
-                    minCoordinates[1] = j;
-                }
-            }
-        }
-        return minCoordinates;
-    }
-
-
-    public static int findSecondSmallestInArray(int[][] array) {
-        int smallestNeighbor = 10;
-        int min = findMinValue(array);
-        int[][] checkedNeighbors = new int[array.length][array.length];
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                if (array[i][j] == min) {
-                    checkedNeighbors[i][j] = findSmallestNeighborValue(array, i, j);
-                } else {
-                    checkedNeighbors[i][j] = 10;
-                }
-            }
-        }
-        for (int i = 0; i < checkedNeighbors.length; i++) {
-            for (int j = 0; j < checkedNeighbors.length; j++) {
-                if (checkedNeighbors[i][j] < 10) {
-                    smallestNeighbor = checkedNeighbors[i][j];
-                }
-            }
-        }
-        return smallestNeighbor;
-    }
-
-    public static int[][] updateWaterLevelOnTerrain(int[][] array) {
-        int secondSmallestValue = findSecondSmallestInArray(array);
-        int min = findMinValue(array);
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                int smallestNeighbor = findSmallestNeighborValue(array, i, j);
-                if (array[i][j] < 0 && array[i][j] == secondSmallestValue  && smallestNeighbor > Math.abs(min)) {
-                    array[i][j]--;
+                if (array[i][j] == min && flag) {
+                    array[i][j] *= (-1);
+                    flag = false;
                 }
             }
         }
         return array;
     }
-
-    public static void springItUp(int[][] array, int min) {
-        boolean flag = true;
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                if (array[i][j] == min && flag) {
-                    array[i][j] = Math.abs(min) * (-1);
-                    flag = false;
-                }
-            }
-        }
-    }
-
 
     public static int findMinValue(int[][] array) {
         int minNumber = Integer.MAX_VALUE;
@@ -261,6 +240,6 @@ public class Main {
             }
             System.out.println();
         }
+        System.out.println();
     }
 }
-
